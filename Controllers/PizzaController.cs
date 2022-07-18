@@ -1,5 +1,6 @@
 ﻿using la_mia_pizzeria_razor_layout.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace la_mia_pizzeria_razor_layout.Controllers
 {
@@ -27,6 +28,30 @@ namespace la_mia_pizzeria_razor_layout.Controllers
                 return View("Detail",pizzaFound);
                 }
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Pizza pizza)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("CreateForm", pizza);
+            }
+            using(PizzaContext context = new PizzaContext()) 
+            {
+                context.Add(new Pizza(pizza.Name, pizza.Description, pizza.Image, pizza.Price));
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            
+        }
+
+        [HttpGet]
+        public IActionResult CreateForm()
+        {
+            return View();
+
         }
     }
 }
